@@ -8,11 +8,20 @@
 <!-- SEO + Social sharing -->
 <meta name="description" content="A red-teamer's walk through an agentic AI platform. Eight defensive rings, one trust anchor, and why composition is the defining failure mode.">
 <meta name="author" content="Karthik Arunapuram">
+<meta name="theme-color" content="#0E1218">
 
 <meta property="og:title" content="The Pivot Maze: Walking an Agentic AI Architecture, Ring by Ring">
 <meta property="og:description" content="Eight rings. One trust anchor. The exploit lives in the chain.">
 <meta property="og:type" content="article">
+<meta property="og:url" content="https://karthikarunapuram8-dot.github.io/the-pivot-maze/">
 <meta property="og:image" content="assets/agent-platform-governance-redline.png">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="900">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Pivot Maze: Walking an Agentic AI Architecture, Ring by Ring">
+<meta name="twitter:description" content="Eight rings. One trust anchor. The exploit lives in the chain.">
+<meta name="twitter:image" content="assets/agent-platform-governance-redline.png">
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,6 +33,9 @@
 
 <body>
 
+<!-- Reading progress -->
+<div class="progress" aria-hidden="true"><div class="progress-fill" id="progress-fill"></div></div>
+
 <!-- ============== HERO ============== -->
 <header class="hero">
   <div class="hero-inner">
@@ -33,12 +45,21 @@
     <div class="hero-meta">
       <span>Karthik Arunapuram</span>
       <span class="meta-divider">&middot;</span>
-      <span>22 min read</span>
+      <span>Build 2026.05</span>
+      <span class="meta-divider">&middot;</span>
+      <span>25 min read</span>
+    </div>
+    <div class="hero-share">
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fkarthikarunapuram8-dot.github.io%2Fthe-pivot-maze%2F" target="_blank" rel="noopener">Share on LinkedIn</a>
+      <a href="https://twitter.com/intent/tweet?text=The%20Pivot%20Maze%3A%20walking%20an%20agentic%20AI%20architecture%2C%20ring%20by%20ring.&url=https%3A%2F%2Fkarthikarunapuram8-dot.github.io%2Fthe-pivot-maze%2F" target="_blank" rel="noopener">Share on X</a>
+      <a href="https://github.com/karthikarunapuram8-dot/the-pivot-maze" target="_blank" rel="noopener">GitHub</a>
     </div>
   </div>
 </header>
 
-<!-- ============== MAIN ============== -->
+<!-- ============== LAYOUT (main + TOC) ============== -->
+<div class="layout">
+
 <main>
 <article>
 
@@ -66,8 +87,8 @@
   </p>
 </section>
 
-<!-- ============== ARCHITECTURE ============== -->
-<section class="figure-section">
+<!-- ============== ARCHITECTURE FIGURE ============== -->
+<section class="figure-section" id="architecture">
   <figure class="figure-wide">
     <img src="assets/agent-platform-governance-redline.png" alt="Agent Platform Governance reference architecture, showing Control Plane, Security Services, Runtime, Telemetry Router, and Audit Sink layers with tenant isolation lanes and a Governance Audit Bus." loading="lazy">
     <figcaption>
@@ -76,7 +97,7 @@
       Telemetry Router, Audit Sink. The Governance Audit Bus at the top
       mirrors every change in the governance layer into a tamper-evident
       ledger. The rings I walk through below correspond to layers in this
-      diagram.
+      diagram. <a href="#deep-dive">Jump to the component-by-component breakdown &rarr;</a>
     </figcaption>
   </figure>
 </section>
@@ -86,10 +107,10 @@
 </section>
 
 <!-- ============== RINGS ============== -->
-<section class="rings">
+<section class="rings" id="rings">
 
-  <!-- RING 01 -->
-  <article class="ring">
+  <article class="ring anchor" id="ring-01">
+    <a href="#ring-01" class="anchor-link" aria-label="Link to Ring 01">#</a>
     <header class="ring-header">
       <span class="ring-num">01</span>
       <h2 class="ring-name">POLICY</h2>
@@ -115,11 +136,12 @@
         <span class="fine">Fine.</span>
       </p>
       <p class="pivot">&rarr; I move to identity.</p>
+      <a href="#component-pdp" class="see-component">&darr; defender's machinery: Policy Decision Point</a>
     </div>
   </article>
 
-  <!-- RING 02 -->
-  <article class="ring">
+  <article class="ring anchor" id="ring-02">
+    <a href="#ring-02" class="anchor-link" aria-label="Link to Ring 02">#</a>
     <header class="ring-header">
       <span class="ring-num">02</span>
       <h2 class="ring-name">IDENTITY</h2>
@@ -144,11 +166,12 @@
         no longer sufficient. <span class="fine">Fine.</span>
       </p>
       <p class="pivot">&rarr; I look for content the agent already trusts.</p>
+      <a href="#component-broker" class="see-component">&darr; defender's machinery: Identity Broker / STS</a>
     </div>
   </article>
 
-  <!-- RING 03 -->
-  <article class="ring">
+  <article class="ring anchor" id="ring-03">
+    <a href="#ring-03" class="anchor-link" aria-label="Link to Ring 03">#</a>
     <header class="ring-header">
       <span class="ring-num">03</span>
       <h2 class="ring-name">TRUSTED CONTENT</h2>
@@ -168,11 +191,12 @@
         escalate. <span class="fine">Fine.</span>
       </p>
       <p class="pivot">&rarr; I shape what gets retrieved in the first place.</p>
+      <a href="#component-ingress" class="see-component">&darr; defender's machinery: Ingress Filter</a>
     </div>
   </article>
 
-  <!-- RING 04 -->
-  <article class="ring">
+  <article class="ring anchor" id="ring-04">
+    <a href="#ring-04" class="anchor-link" aria-label="Link to Ring 04">#</a>
     <header class="ring-header">
       <span class="ring-num">04</span>
       <h2 class="ring-name">RETRIEVAL CORPUS</h2>
@@ -193,8 +217,8 @@
     </div>
   </article>
 
-  <!-- RING 05 -->
-  <article class="ring">
+  <article class="ring anchor" id="ring-05">
+    <a href="#ring-05" class="anchor-link" aria-label="Link to Ring 05">#</a>
     <header class="ring-header">
       <span class="ring-num">05</span>
       <h2 class="ring-name">LONG-TERM MEMORY</h2>
@@ -210,11 +234,12 @@
         never reaches a useful target. <span class="fine">Fine.</span>
       </p>
       <p class="pivot">&rarr; I chain tools.</p>
+      <a href="#component-memory" class="see-component">&darr; defender's machinery: Long-Term Memory</a>
     </div>
   </article>
 
-  <!-- RING 06 -->
-  <article class="ring ring-thesis">
+  <article class="ring ring-thesis anchor" id="ring-06">
+    <a href="#ring-06" class="anchor-link" aria-label="Link to Ring 06">#</a>
     <header class="ring-header">
       <span class="ring-num">06</span>
       <h2 class="ring-name">TOOL CHAINING</h2>
@@ -237,11 +262,12 @@
         <span class="fine">Fine.</span>
       </p>
       <p class="pivot">&rarr; I move up the supply chain.</p>
+      <a href="#component-ala" class="see-component">&darr; defender's machinery: ALA Token Forwarding</a>
     </div>
   </article>
 
-  <!-- RING 07 -->
-  <article class="ring">
+  <article class="ring anchor" id="ring-07">
+    <a href="#ring-07" class="anchor-link" aria-label="Link to Ring 07">#</a>
     <header class="ring-header">
       <span class="ring-num">07</span>
       <h2 class="ring-name">TOOL DEFINITIONS</h2>
@@ -269,8 +295,8 @@
     </div>
   </article>
 
-  <!-- RING 08 -->
-  <article class="ring">
+  <article class="ring anchor" id="ring-08">
+    <a href="#ring-08" class="anchor-link" aria-label="Link to Ring 08">#</a>
     <header class="ring-header">
       <span class="ring-num">08</span>
       <h2 class="ring-name">AUDIT</h2>
@@ -290,11 +316,12 @@
         audited in the first place.
       </p>
       <p class="pivot">&rarr; I reach for the governance layer itself.</p>
+      <a href="#component-audit" class="see-component">&darr; defender's machinery: Audit Sink</a>
     </div>
   </article>
 
-  <!-- RING 09 (GOVERNANCE - the prize) -->
-  <article class="ring ring-prize">
+  <article class="ring ring-prize anchor" id="ring-09">
+    <a href="#ring-09" class="anchor-link" aria-label="Link to Ring 09">#</a>
     <header class="ring-header">
       <span class="ring-num prize">&#9733;</span>
       <h2 class="ring-name">GOVERNANCE</h2>
@@ -317,20 +344,21 @@
         <span class="fine">Fine.</span> My window is whatever lies between
         the policy change and someone noticing.
       </p>
+      <a href="#component-admin-audit" class="see-component">&darr; defender's machinery: Admin Plane Audit</a>
     </div>
   </article>
 
 </section>
 
 <!-- ============== ARCHITECTURE DEEP-DIVE ============== -->
-<section class="deep-dive">
+<section class="deep-dive" id="deep-dive">
   <div class="deep-dive-kicker">PART II &middot; THE ARCHITECTURE, COMPONENT BY COMPONENT</div>
   <h2 class="deep-dive-title">Now look at the defender</h2>
   <div class="deep-dive-intro">
     <p>
       You just walked the attacker's path. Here is what they were probing
       against, in component-level detail. Each block below maps to a layer
-      in Figure 1.
+      in <a href="#architecture">Figure 1</a>.
     </p>
     <p>
       The point of reading these is to internalize that no single component
@@ -340,8 +368,7 @@
     </p>
   </div>
 
-  <!-- LAYER A -->
-  <section class="layer">
+  <section class="layer" id="layer-control-plane">
     <h3 class="layer-heading"><span class="layer-letter">A</span> Control Plane &middot; Authorization</h3>
     <p class="layer-summary">
       Where anything in the platform that is allowed to exist gets defined.
@@ -349,7 +376,7 @@
       easier it is to audit who changed what.
     </p>
 
-    <article class="component">
+    <article class="component anchor" id="component-release-pipeline">
       <h4 class="component-name">Agent Release Pipeline</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -369,7 +396,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-registry">
       <h4 class="component-name">Agent Registry</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -389,7 +416,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-policy-authoring">
       <h4 class="component-name">Policy Authoring</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -409,7 +436,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-admin-audit">
       <h4 class="component-name">Admin Plane Audit &middot; Governance Change Ledger</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -421,7 +448,7 @@
       </div>
       <div class="component-field breaks">
         <div class="component-field-label">What breaks</div>
-        <div class="component-field-body">The ring 09 attack from above. An attacker with control-plane access adds a policy exception in their favor, registers a malicious tool, or rotates a secret to one they hold. Nothing detects this because the runtime sees the new policy and obeys it as intended.</div>
+        <div class="component-field-body">The <a href="#ring-09">ring 09</a> attack from above. An attacker with control-plane access adds a policy exception in their favor, registers a malicious tool, or rotates a secret to one they hold. Nothing detects this because the runtime sees the new policy and obeys it as intended.</div>
       </div>
       <div class="component-field">
         <div class="component-field-label">Wiring</div>
@@ -430,8 +457,7 @@
     </article>
   </section>
 
-  <!-- LAYER B -->
-  <section class="layer">
+  <section class="layer" id="layer-security-services">
     <h3 class="layer-heading"><span class="layer-letter">B</span> Security Services &middot; Enforcement</h3>
     <p class="layer-summary">
       Shared services every tenant agent calls, but never owns. Putting these
@@ -439,7 +465,7 @@
       reconfigure them.
     </p>
 
-    <article class="component">
+    <article class="component anchor" id="component-broker">
       <h4 class="component-name">Identity Broker / STS</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -451,7 +477,7 @@
       </div>
       <div class="component-field breaks">
         <div class="component-field-label">What breaks</div>
-        <div class="component-field-body">You end up using the agent's workload identity for everything (ring 02). One prompt injection becomes a path to every tool the agent can call.</div>
+        <div class="component-field-body">You end up using the agent's workload identity for everything (<a href="#ring-02">ring 02</a>). One prompt injection becomes a path to every tool the agent can call.</div>
       </div>
       <div class="component-field">
         <div class="component-field-label">Wiring</div>
@@ -459,15 +485,15 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-pdp">
       <h4 class="component-name">Policy Decision Point &middot; Deterministic</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
-        <div class="component-field-body">OPA, Cedar, or equivalent. A deterministic engine that takes (subject, action, resource, context) and returns allow or deny.</div>
+        <div class="component-field-body"><code>OPA</code>, <code>Cedar</code>, or equivalent. A deterministic engine that takes (subject, action, resource, context) and returns allow or deny.</div>
       </div>
       <div class="component-field">
         <div class="component-field-label">Why it exists</div>
-        <div class="component-field-body">Authorization decisions must be reproducible. Two identical inputs must produce the same answer. An LLM-based policy decision is by definition non-deterministic and therefore manipulable (ring 01).</div>
+        <div class="component-field-body">Authorization decisions must be reproducible. Two identical inputs must produce the same answer. An LLM-based policy decision is by definition non-deterministic and therefore manipulable (<a href="#ring-01">ring 01</a>).</div>
       </div>
       <div class="component-field breaks">
         <div class="component-field-label">What breaks</div>
@@ -479,7 +505,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-vault">
       <h4 class="component-name">Tenant Vault</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -499,7 +525,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-ingress">
       <h4 class="component-name">Ingress Filter &middot; Modal Aware</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -519,7 +545,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-egress">
       <h4 class="component-name">Egress DLP &middot; Modal Aware</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -540,8 +566,7 @@
     </article>
   </section>
 
-  <!-- LAYER C -->
-  <section class="layer">
+  <section class="layer" id="layer-runtime">
     <h3 class="layer-heading"><span class="layer-letter">C</span> Agent Runtime &middot; Per Tenant</h3>
     <p class="layer-summary">
       Where actual work happens. The diagram shows two parallel swimlanes
@@ -550,7 +575,7 @@
       runtime into another's.
     </p>
 
-    <article class="component">
+    <article class="component anchor" id="component-pep">
       <h4 class="component-name">Policy Enforcement Point &middot; Agent Gateway</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -570,7 +595,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-workload">
       <h4 class="component-name">Workload Identity</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -582,7 +607,7 @@
       </div>
       <div class="component-field breaks">
         <div class="component-field-label">What breaks</div>
-        <div class="component-field-body">You either give the agent process broad access (which becomes the privilege escalation primitive in ring 02) or you cannot deploy it at all.</div>
+        <div class="component-field-body">You either give the agent process broad access (which becomes the privilege escalation primitive in <a href="#ring-02">ring 02</a>) or you cannot deploy it at all.</div>
       </div>
       <div class="component-field">
         <div class="component-field-label">Wiring</div>
@@ -590,7 +615,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-obo">
       <h4 class="component-name">Propagated Caller Identity</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -610,7 +635,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-memory">
       <h4 class="component-name">Long-Term Memory &middot; Per Tenant</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -630,7 +655,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-planner">
       <h4 class="component-name">Tool Use Planner</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -638,7 +663,7 @@
       </div>
       <div class="component-field">
         <div class="component-field-label">Why it exists</div>
-        <div class="component-field-body">Tool chaining is the defining failure mode (ring 06). The planner is where chain-graph constraints get enforced before execution begins.</div>
+        <div class="component-field-body">Tool chaining is the defining failure mode (<a href="#ring-06">ring 06</a>). The planner is where chain-graph constraints get enforced before execution begins.</div>
       </div>
       <div class="component-field breaks">
         <div class="component-field-label">What breaks</div>
@@ -650,7 +675,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-hcd">
       <h4 class="component-name">HCD Approval Gate &middot; High-Risk Actions</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -670,7 +695,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-ala">
       <h4 class="component-name">ALA Token Forwarding &middot; Per Chain Segment</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -690,7 +715,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-anomaly">
       <h4 class="component-name">Inline Anomaly Detector</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -711,15 +736,14 @@
     </article>
   </section>
 
-  <!-- LAYER D -->
-  <section class="layer">
+  <section class="layer" id="layer-telemetry">
     <h3 class="layer-heading"><span class="layer-letter">D</span> Telemetry and Audit Router</h3>
     <p class="layer-summary">
       Two things wearing a single uniform. They look similar. They are not
       the same and you must not let them collapse into one.
     </p>
 
-    <article class="component">
+    <article class="component anchor" id="component-telemetry">
       <h4 class="component-name">Telemetry Sink &middot; Metrics, Ops</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -739,7 +763,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-audit">
       <h4 class="component-name">Audit Sink &middot; Immutable</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -747,7 +771,7 @@
       </div>
       <div class="component-field">
         <div class="component-field-label">Why it exists</div>
-        <div class="component-field-body">The observability stack is not a security boundary. It was built for engineers debugging, not for an adversary trying to disappear (ring 08).</div>
+        <div class="component-field-body">The observability stack is not a security boundary. It was built for engineers debugging, not for an adversary trying to disappear (<a href="#ring-08">ring 08</a>).</div>
       </div>
       <div class="component-field breaks">
         <div class="component-field-label">What breaks</div>
@@ -759,7 +783,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-siem">
       <h4 class="component-name">SIEM / Compliance Reporting</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -780,8 +804,7 @@
     </article>
   </section>
 
-  <!-- THE TRUST BOUNDARY -->
-  <section class="layer">
+  <section class="layer" id="layer-trust-boundary">
     <h3 class="layer-heading"><span class="layer-letter">&#10148;</span> The Trust Boundary</h3>
     <p class="layer-summary">
       Everything to the right of the trust boundary is outside the platform's
@@ -789,7 +812,7 @@
       the adversarial eval suite.
     </p>
 
-    <article class="component">
+    <article class="component anchor" id="component-mcp">
       <h4 class="component-name">External MCP Tools and Marketplace</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -801,7 +824,7 @@
       </div>
       <div class="component-field breaks">
         <div class="component-field-label">What breaks</div>
-        <div class="component-field-body">Without signed manifests, attestation, and verification at the egress gateway, the supply chain attack from ring 07 is trivial. Tool-description injection from inside a third-party schema also lands here.</div>
+        <div class="component-field-body">Without signed manifests, attestation, and verification at the egress gateway, the supply chain attack from <a href="#ring-07">ring 07</a> is trivial. Tool-description injection from inside a third-party schema also lands here.</div>
       </div>
       <div class="component-field">
         <div class="component-field-label">Wiring</div>
@@ -809,7 +832,7 @@
       </div>
     </article>
 
-    <article class="component">
+    <article class="component anchor" id="component-redteam">
       <h4 class="component-name">Adversarial Eval Suite / Red Team Corpus</h4>
       <div class="component-field">
         <div class="component-field-label">What it is</div>
@@ -830,7 +853,6 @@
     </article>
   </section>
 
-  <!-- CODA -->
   <div class="deep-dive-coda">
     <p class="anchor-line">The pattern, stated plainly.</p>
     <p>
@@ -855,7 +877,7 @@
 </section>
 
 <!-- ============== MAZE VISUALIZATION ============== -->
-<section class="figure-section">
+<section class="figure-section" id="maze">
   <figure class="figure-wide">
     <img src="assets/agentic-ai-pivot-maze.gif" alt="Animated visualization of the pivot maze. An attacker marker enters from the right, probes each defensive ring, is deflected at each one, and pivots to the next until reaching the central Governance Layer vault. A narrative panel on the left shows the attacker's inner monologue at each ring." loading="lazy">
     <figcaption>
@@ -869,7 +891,7 @@
 </section>
 
 <!-- ============== THESIS ============== -->
-<section class="prose thesis">
+<section class="prose thesis" id="thesis">
   <h2 class="section-heading">A pivot tree, not a vulnerability list</h2>
   <p>
     This is what a serious adversary's plan actually looks like. Not a list of
@@ -892,14 +914,67 @@
     The ones that will survive the next two years have all of them, wired in
     the right order, with the governance layer auditing itself.
   </p>
-  <p>
-    If you have been red-teaming or threat-modeling agentic AI, I want to
-    compare notes. Which rings is the field actually getting right?
-  </p>
+
+  <div class="end-cta">
+    <div class="end-cta-kicker">Compare notes</div>
+    <h3>Which rings is the field actually getting right?</h3>
+    <p>
+      If you have been red-teaming or threat-modeling agentic AI, this is
+      where the conversation should happen. The architecture above is one
+      person's working model. It will be wrong in places. I would rather
+      argue about which places than ship the wrong abstraction quietly.
+    </p>
+    <div class="end-cta-actions">
+      <a href="https://github.com/karthikarunapuram8-dot/the-pivot-maze" target="_blank" rel="noopener" class="primary">Open an issue</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fkarthikarunapuram8-dot.github.io%2Fthe-pivot-maze%2F" target="_blank" rel="noopener">Share on LinkedIn</a>
+      <a href="https://karthikarunapuram8-dot.github.io/agent-attack-periodic-table/" target="_blank" rel="noopener">See the Agent Attack Periodic Table</a>
+    </div>
+  </div>
 </section>
 
 </article>
 </main>
+
+<!-- ============== TOC ============== -->
+<aside class="toc" aria-label="Table of contents">
+  <div class="toc-label">Contents</div>
+  <ul class="toc-list">
+    <li><a href="#architecture">Architecture</a></li>
+  </ul>
+  <div class="toc-section">
+    <div class="toc-section-title">Part I &middot; The rings</div>
+    <ul class="toc-list">
+      <li><a href="#ring-01">01 &middot; Policy</a></li>
+      <li><a href="#ring-02">02 &middot; Identity</a></li>
+      <li><a href="#ring-03">03 &middot; Trusted Content</a></li>
+      <li><a href="#ring-04">04 &middot; Retrieval Corpus</a></li>
+      <li><a href="#ring-05">05 &middot; Long-Term Memory</a></li>
+      <li><a href="#ring-06">06 &middot; Tool Chaining</a></li>
+      <li><a href="#ring-07">07 &middot; Tool Definitions</a></li>
+      <li><a href="#ring-08">08 &middot; Audit</a></li>
+      <li><a href="#ring-09">&#9733; &middot; Governance</a></li>
+    </ul>
+  </div>
+  <div class="toc-section">
+    <div class="toc-section-title">Part II &middot; Components</div>
+    <ul class="toc-list">
+      <li><a href="#layer-control-plane">A &middot; Control Plane</a></li>
+      <li><a href="#layer-security-services">B &middot; Security Services</a></li>
+      <li><a href="#layer-runtime">C &middot; Agent Runtime</a></li>
+      <li><a href="#layer-telemetry">D &middot; Telemetry &amp; Audit</a></li>
+      <li><a href="#layer-trust-boundary">&#10148; &middot; Trust Boundary</a></li>
+    </ul>
+  </div>
+  <div class="toc-section">
+    <ul class="toc-list">
+      <li><a href="#maze">The Maze</a></li>
+      <li><a href="#thesis">Thesis</a></li>
+    </ul>
+  </div>
+</aside>
+
+</div>
+<!-- /layout -->
 
 <!-- ============== FOOTER ============== -->
 <footer>
@@ -918,6 +993,65 @@
     </div>
   </div>
 </footer>
+
+<script>
+(function () {
+  // Reading progress bar
+  var fill = document.getElementById('progress-fill');
+  function updateProgress() {
+    var doc = document.documentElement;
+    var scrollTop = window.scrollY || doc.scrollTop;
+    var height = doc.scrollHeight - window.innerHeight;
+    var ratio = height > 0 ? Math.min(Math.max(scrollTop / height, 0), 1) : 0;
+    document.documentElement.style.setProperty('--progress', ratio.toFixed(3));
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  // TOC active highlighting via IntersectionObserver
+  var tocLinks = document.querySelectorAll('.toc-list a');
+  if (!tocLinks.length || !('IntersectionObserver' in window)) return;
+
+  var linkById = {};
+  tocLinks.forEach(function (a) {
+    var id = a.getAttribute('href').slice(1);
+    if (id) linkById[id] = a;
+  });
+
+  var observed = [];
+  Object.keys(linkById).forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) observed.push(el);
+  });
+
+  var visible = new Map();
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        visible.set(entry.target.id, entry.intersectionRatio);
+      } else {
+        visible.delete(entry.target.id);
+      }
+    });
+    var bestId = null;
+    var bestRatio = -1;
+    visible.forEach(function (ratio, id) {
+      if (ratio > bestRatio) {
+        bestRatio = ratio;
+        bestId = id;
+      }
+    });
+    tocLinks.forEach(function (a) { a.classList.remove('active'); });
+    if (bestId && linkById[bestId]) linkById[bestId].classList.add('active');
+  }, {
+    rootMargin: '-20% 0px -60% 0px',
+    threshold: [0, 0.25, 0.5, 0.75, 1]
+  });
+
+  observed.forEach(function (el) { observer.observe(el); });
+})();
+</script>
 
 </body>
 </html>
