@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pivot Maze: Walking an Agentic AI Architecture, Ring by Ring</title>
+
+<!-- SEO + Social sharing -->
+<meta name="description" content="A red-teamer's walk through an agentic AI platform. Eight defensive rings, one trust anchor, and why composition is the defining failure mode.">
+<meta name="author" content="Karthik Arunapuram">
+
+<meta property="og:title" content="The Pivot Maze: Walking an Agentic AI Architecture, Ring by Ring">
+<meta property="og:description" content="Eight rings. One trust anchor. The exploit lives in the chain.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="assets/agent-platform-governance-redline.png">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ============== HERO ============== -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-kicker">FIELD NOTES · AGENTIC AI SECURITY</div>
+    <h1 class="hero-title">The Pivot Maze</h1>
+    <p class="hero-subtitle">Walking an agentic AI architecture, ring by ring</p>
+    <div class="hero-meta">
+      <span>Karthik Arunapuram</span>
+      <span class="meta-divider">·</span>
+      <span>14 min read</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============== MAIN ============== -->
+<main>
+<article>
+
+<!-- ============== INTRO ============== -->
+<section class="prose">
+  <p class="lede">
+    I write this from a personal lab where I red-team agentic AI systems through
+    different threat scenarios. The goal is not exploitation. The goal is to
+    understand where these architectures actually break, and what it would take
+    to keep them from breaking.
+  </p>
+
+  <p>
+    If I were targeting an agentic AI platform tomorrow with serious capability,
+    I would not show up with an exploit kit. I would show up with patience,
+    recon, and a model of every control they have built. Then I would walk the
+    architecture, ring by ring, until something gave.
+  </p>
+
+  <p>
+    Six months of building agents on GCP for a Fortune 500 has taught me what
+    those rings look like. They are not always there. When they are, they are
+    not always wired correctly. And even when they are wired correctly, the
+    chain composes.
+  </p>
+</section>
+
+<!-- ============== ARCHITECTURE ============== -->
+<section class="figure-section">
+  <figure class="figure-wide">
+    <img src="assets/agent-platform-governance-redline.png" alt="Agent Platform Governance reference architecture, showing Control Plane, Security Services, Runtime, Telemetry Router, and Audit Sink layers with tenant isolation lanes and a Governance Audit Bus." loading="lazy">
+    <figcaption>
+      <span class="figcap-label">Figure 1</span>
+      Reference architecture. Control Plane, Security Services, Runtime,
+      Telemetry Router, Audit Sink. The Governance Audit Bus at the top
+      mirrors every change in the governance layer into a tamper-evident
+      ledger. The rings I walk through below correspond to layers in this
+      diagram.
+    </figcaption>
+  </figure>
+</section>
+
+<section class="prose">
+  <p>Here is how that day unfolds.</p>
+</section>
+
+<!-- ============== RINGS ============== -->
+<section class="rings">
+
+  <!-- RING 01 -->
+  <article class="ring">
+    <header class="ring-header">
+      <span class="ring-num">01</span>
+      <h2 class="ring-name">POLICY</h2>
+    </header>
+    <div class="ring-body">
+      <p class="ring-attempt">
+        If allow / deny decisions go through an LLM, I do not need to attack
+        the system. I attack the policy itself. I craft a prompt that reframes
+        my request inside a context the model finds defensible. Allow / deny
+        becomes a debate, and debates are winnable.
+      </p>
+      <p>
+        If they have a deterministic PDP (<code>OPA</code>, <code>Cedar</code>,
+        real authorization logic in the deny path), I cannot talk my way
+        through. <span class="fine">Fine.</span> I look for time-of-check,
+        time-of-use gaps. If the policy evaluates an action before its
+        arguments are finalized, I change the target after approval. The
+        decision was correct for one object. Execution happens against another.
+      </p>
+      <p>
+        If the policy is evaluated at the point of execution with arguments
+        frozen at decision time, my TOCTOU window closes.
+        <span class="fine">Fine.</span>
+      </p>
+      <p class="pivot">→ I move to identity.</p>
+    </div>
+  </article>
+
+  <!-- RING 02 -->
+  <article class="ring">
+    <header class="ring-header">
+      <span class="ring-num">02</span>
+      <h2 class="ring-name">IDENTITY</h2>
+    </header>
+    <div class="ring-body">
+      <p class="ring-attempt">
+        If tool authorization runs against the agent's workload identity, I
+        only need one successful prompt injection. One. Any input that reaches
+        the agent becomes a path to any tool the agent can call. The agent
+        becomes my privilege escalation primitive.
+      </p>
+      <p>
+        If they propagate caller identity through OBO tokens, the agent is no
+        longer my pivot. <span class="fine">Fine.</span> I look for bearer
+        semantics. Any token that lands in browser storage, logs, crash dumps,
+        or any intermediary system becomes my credential. I replay it from my
+        own infrastructure and inherit the caller's authority.
+      </p>
+      <p>
+        If tokens are bound to a client-held key (DPoP or equivalent
+        proof-of-possession), replay fails because possession of the token is
+        no longer sufficient. <span class="fine">Fine.</span>
+      </p>
+      <p class="pivot">→ I look for content the agent already trusts.</p>
+    </div>
+  </article>
+
+  <!-- RING 03 -->
+  <article class="ring">
+    <header class="ring-header">
+      <span class="ring-num">03</span>
+      <h2 class="ring-name">TRUSTED CONTENT</h2>
+    </header>
+    <div class="ring-body">
+      <p class="ring-attempt">
+        I do not attack the prompt. I write my instructions into a document, a
+        ticket, an email thread, a shared note. When the agent's retrieval
+        layer fetches that content for an unrelated workflow, my instructions
+        execute inside the legitimate flow. The agent thinks it is helping.
+        The content tells it whom to help.
+      </p>
+      <p>
+        If retrieved content is treated as untrusted by default (capability
+        scoping, content provenance, an instruction firewall between retrieved
+        data and the agent's own directives), my indirect injection does not
+        escalate. <span class="fine">Fine.</span>
+      </p>
+      <p class="pivot">→ I shape what gets retrieved in the first place.</p>
+    </div>
+  </article>
+
+  <!-- RING 04 -->
+  <article class="ring">
+    <header class="ring-header">
+      <span class="ring-num">04</span>
+      <h2 class="ring-name">RETRIEVAL CORPUS</h2>
+    </header>
+    <div class="ring-body">
+      <p class="ring-attempt">
+        I do not need the model to believe me. I need the retriever to prefer
+        me. I shape documents to dominate vector search: keyword density,
+        authoritative phrasing, structure that mimics canonical sources. My
+        poisoned record outranks the real one. The model summarizes me.
+      </p>
+      <p>
+        If retrieval has provenance ranking, source-trust scoring, and
+        per-tenant corpus isolation, my poisoned record does not surface in
+        someone else's query. <span class="fine">Fine.</span>
+      </p>
+      <p class="pivot">→ I plant a payload directly in long-term memory.</p>
+    </div>
+  </article>
+
+  <!-- RING 05 -->
+  <article class="ring">
+    <header class="ring-header">
+      <span class="ring-num">05</span>
+      <h2 class="ring-name">LONG-TERM MEMORY</h2>
+    </header>
+    <div class="ring-body">
+      <p class="ring-attempt">
+        I plant a payload now. The agent retrieves it on a future call. That
+        is persistence inside an agentic system. Memory is patient.
+      </p>
+      <p>
+        If memory is per-tenant, quarantined on write, verified before
+        promotion to the active partition, with ACL-gated reads, my payload
+        never reaches a useful target. <span class="fine">Fine.</span>
+      </p>
+      <p class="pivot">→ I chain tools.</p>
+    </div>
+  </article>
+
+  <!-- RING 06 -->
+  <article class="ring ring-thesis">
+    <header class="ring-header">
+      <span class="ring-num">06</span>
+      <h2 class="ring-name">TOOL CHAINING</h2>
+    </header>
+    <div class="ring-body">
+      <p class="ring-attempt">
+        No single tool needs excessive privilege. I chain them. One tool
+        discovers the target. Another retrieves sensitive data. A third
+        performs the action. Each one looks reasonable in isolation. The
+        exploit lives in the composition.
+      </p>
+      <p class="callout">
+        This is the defining failure mode of agentic systems, and most
+        platforms do not yet have a model for it.
+      </p>
+      <p>
+        If tool calls within a session require scoped capability tokens per
+        chain segment, with policy evaluation at each composition boundary,
+        the chain breaks where the privileges would have compounded.
+        <span class="fine">Fine.</span>
+      </p>
+      <p class="pivot">→ I move up the supply chain.</p>
+    </div>
+  </article>
+
+  <!-- RING 07 -->
+  <article class="ring">
+    <header class="ring-header">
+      <span class="ring-num">07</span>
+      <h2 class="ring-name">TOOL DEFINITIONS</h2>
+    </header>
+    <div class="ring-body">
+      <p class="ring-attempt">
+        If the agent loads tool definitions without verifying signatures, I
+        swap one. Every agent that loads my version is mine. The definition
+        tells the agent what arguments to send, how to interpret responses,
+        what to chain. I do not need to attack the agent at all.
+      </p>
+      <p>
+        If tool manifests are signed and verified at the egress gateway, the
+        swap does not stick. <span class="fine">Fine.</span> Signed manifests
+        only shift the problem. I target the signing key, the build pipeline,
+        or a maintainer. Once I sign malicious artifacts with trusted
+        credentials, verification works exactly as designed.
+      </p>
+      <p>
+        If signing keys are rotated, hardware-bound, with multi-party release
+        approval and SBOM attestation, my supply chain attack costs more than
+        my target is worth. <span class="fine">Fine.</span>
+      </p>
+      <p class="pivot">→ I move to the layer that defines what gets audited.</p>
+    </div>
+  </article>
+
+  <!-- RING 08 -->
+  <article class="ring">
+    <header class="ring-header">
+      <span class="ring-num">08</span>
+      <h2 class="ring-name">AUDIT</h2>
+    </header>
+    <div class="ring-body">
+      <p class="ring-attempt">
+        If audit lives in the observability stack, I have options. Log
+        rotation. Index manipulation. Quiet patience until retention on the
+        entry I touched expires. The observability stack was built for
+        engineers debugging, not for an adversary trying to disappear.
+      </p>
+      <p>
+        If audit is WORM, hash-chained, with retention scoped to compliance
+        regime (SOX 7 year, HIPAA 6 year, FedRAMP per ATO), tampering breaks
+        the chain. <span class="fine">Fine.</span> I act faster than the
+        audit gets reviewed, or I go after the policy that defines what gets
+        audited in the first place.
+      </p>
+      <p class="pivot">→ I reach for the governance layer itself.</p>
+    </div>
+  </article>
+
+  <!-- RING 09 (GOVERNANCE - the prize) -->
+  <article class="ring ring-prize">
+    <header class="ring-header">
+      <span class="ring-num prize">★</span>
+      <h2 class="ring-name">GOVERNANCE</h2>
+    </header>
+    <div class="ring-body">
+      <p class="ring-attempt">
+        If policy changes, identity broker config, secret rotations, and tool
+        registrations are not themselves audited, I do not need to attack the
+        runtime. I rewrite the rules. I add a policy exception in my favor. I
+        rotate a secret and replace it with one I control. I register a
+        malicious tool.
+      </p>
+      <p>
+        The governance layer is the trust anchor for everything else, which
+        makes it the prize.
+      </p>
+      <p>
+        If the governance layer has its own tamper-evident ledger and
+        dual-approval on sensitive changes, the rewrite is visible and slow.
+        <span class="fine">Fine.</span> My window is whatever lies between
+        the policy change and someone noticing.
+      </p>
+    </div>
+  </article>
+
+</section>
+
+<!-- ============== MAZE VISUALIZATION ============== -->
+<section class="figure-section">
+  <figure class="figure-wide">
+    <img src="assets/agentic-ai-pivot-maze.gif" alt="Animated visualization of the pivot maze. An attacker marker enters from the right, probes each defensive ring, is deflected at each one, and pivots to the next until reaching the central Governance Layer vault. A narrative panel on the left shows the attacker's inner monologue at each ring." loading="lazy">
+    <figcaption>
+      <span class="figcap-label">Figure 2</span>
+      The pivot maze. The attacker enters from the right, hits the outer
+      ring, is deflected to a corridor, finds the next seam, pivots, and
+      repeats. The inner monologue on the left shows what they were trying
+      and what stopped them. Every ring held. The chain composed anyway.
+    </figcaption>
+  </figure>
+</section>
+
+<!-- ============== THESIS ============== -->
+<section class="prose thesis">
+  <h2 class="section-heading">A pivot tree, not a vulnerability list</h2>
+  <p>
+    This is what a serious adversary's plan actually looks like. Not a list of
+    vulnerabilities. A pivot tree. The architecture either forces the attacker
+    into the next ring, or it does not.
+  </p>
+
+  <div class="thesis-box">
+    <p class="thesis-line">The defining failure mode of agentic systems is composition.</p>
+    <ul class="thesis-list">
+      <li>No single tool needs to be over-privileged.</li>
+      <li>No single prompt needs to be malicious.</li>
+      <li>No single identity needs to be compromised.</li>
+    </ul>
+    <p class="thesis-line">The exploit lives in the chain.</p>
+  </div>
+
+  <p>
+    Most agentic platforms shipping right now have one or two of these rings.
+    The ones that will survive the next two years have all of them, wired in
+    the right order, with the governance layer auditing itself.
+  </p>
+  <p>
+    If you have been red-teaming or threat-modeling agentic AI, I want to
+    compare notes. Which rings is the field actually getting right?
+  </p>
+</section>
+
+</article>
+</main>
+
+<!-- ============== FOOTER ============== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-author">
+      <div class="footer-name">Karthik Arunapuram</div>
+      <div class="footer-bio">
+        Security architect focused on enterprise AI systems, identity, and
+        cloud security. M.S. Cybersecurity, Georgia Tech. Currently building
+        on GCP. Personal lab where I red-team agents.
+      </div>
+    </div>
+    <div class="footer-meta">
+      <div>&copy; 2026 Karthik Arunapuram</div>
+      <div class="footer-tag">field notes &middot; agentic AI security</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
