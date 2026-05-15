@@ -1,5 +1,5 @@
 /* ========================================================
-   The Pivot Maze · field notes article
+   The Pivot Maze - field notes article
    Aesthetic: Mandiant / MITRE / Stripe documentation
    ======================================================== */
 
@@ -240,7 +240,6 @@ figcaption {
   position: relative;
 }
 
-/* Vertical connector running through all rings */
 .rings::before {
   content: '';
   position: absolute;
@@ -319,7 +318,6 @@ figcaption {
   margin-bottom: 0;
 }
 
-/* The attempt paragraph (attacker voice) */
 .ring-attempt {
   position: relative;
   padding: 16px 20px;
@@ -330,7 +328,6 @@ figcaption {
   font-size: 16px;
 }
 
-/* "Fine." inline marker */
 .fine {
   font-family: var(--font-mono);
   font-weight: 700;
@@ -338,7 +335,6 @@ figcaption {
   letter-spacing: 0.01em;
 }
 
-/* Pivot arrow */
 .pivot {
   font-family: var(--font-mono);
   font-weight: 500;
@@ -350,7 +346,6 @@ figcaption {
   padding-top: 18px;
 }
 
-/* Callout (thesis line in tool chaining ring) */
 .callout {
   padding: 16px 20px;
   background-color: var(--amber-bg);
@@ -360,7 +355,6 @@ figcaption {
   color: var(--text);
 }
 
-/* Inline code */
 code {
   font-family: var(--font-mono);
   font-size: 0.9em;
@@ -371,7 +365,6 @@ code {
   border: 1px solid var(--border-subtle);
 }
 
-/* Special ring styles */
 .ring-thesis .ring-num {
   border-color: var(--amber-border);
   color: var(--amber);
@@ -383,6 +376,196 @@ code {
 
 .ring-prize .ring-name {
   color: var(--amber);
+}
+
+/* ========================================================
+   Architecture deep-dive (component-by-component section)
+   ======================================================== */
+
+.deep-dive {
+  max-width: var(--content-width);
+  margin: 96px auto 64px;
+  padding-top: 64px;
+  border-top: 1px solid var(--border-default);
+}
+
+.deep-dive-kicker {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--amber);
+  margin-bottom: 20px;
+}
+
+.deep-dive-title {
+  font-family: var(--font-mono);
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  margin-bottom: 20px;
+  line-height: 1.1;
+}
+
+.deep-dive-intro {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--text-2);
+  margin-bottom: 56px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.deep-dive-intro p {
+  margin-bottom: 16px;
+}
+
+.deep-dive-intro p:last-child {
+  margin-bottom: 0;
+}
+
+.layer {
+  margin: 64px 0 0;
+  padding-top: 56px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.layer:first-of-type {
+  padding-top: 0;
+  border-top: none;
+  margin-top: 0;
+}
+
+.layer-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.layer-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: var(--amber-bg);
+  border: 1px solid var(--amber-border);
+  border-radius: 4px;
+  font-size: 15px;
+  color: var(--amber);
+  font-weight: 700;
+}
+
+.layer-summary {
+  color: var(--text-2);
+  font-size: 16px;
+  line-height: 1.65;
+  margin-bottom: 40px;
+  font-style: italic;
+}
+
+.component {
+  margin-bottom: 40px;
+  padding-bottom: 36px;
+  border-bottom: 1px dashed var(--border-subtle);
+}
+
+.component:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.component-name {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 18px;
+  letter-spacing: -0.005em;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.component-name::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background-color: var(--amber);
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  transform: translateY(-2px);
+}
+
+.component-field {
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 18px;
+  align-items: baseline;
+}
+
+.component-field:last-child {
+  margin-bottom: 0;
+}
+
+.component-field-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding-top: 4px;
+  white-space: nowrap;
+}
+
+.component-field-body {
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.component-field.breaks .component-field-label {
+  color: var(--red-bright);
+}
+
+.deep-dive-coda {
+  margin-top: 80px;
+  padding: 32px;
+  background-color: var(--bg-elev);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+}
+
+.deep-dive-coda p {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.deep-dive-coda p:last-child {
+  margin-bottom: 0;
+}
+
+.deep-dive-coda .anchor-line {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--amber-border);
 }
 
 /* ========================================================
@@ -429,7 +612,7 @@ code {
 }
 
 .thesis-list li::before {
-  content: '·';
+  content: '\B7';
   position: absolute;
   left: 8px;
   color: var(--red);
@@ -533,6 +716,19 @@ footer {
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
+  }
+
+  .component-field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .component-field-label {
+    padding-top: 0;
+  }
+
+  .deep-dive-coda {
+    padding: 24px 20px;
   }
 }
 

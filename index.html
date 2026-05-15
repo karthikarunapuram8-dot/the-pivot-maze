@@ -27,13 +27,13 @@
 <!-- ============== HERO ============== -->
 <header class="hero">
   <div class="hero-inner">
-    <div class="hero-kicker">FIELD NOTES · AGENTIC AI SECURITY</div>
+    <div class="hero-kicker">FIELD NOTES &middot; AGENTIC AI SECURITY</div>
     <h1 class="hero-title">The Pivot Maze</h1>
     <p class="hero-subtitle">Walking an agentic AI architecture, ring by ring</p>
     <div class="hero-meta">
       <span>Karthik Arunapuram</span>
-      <span class="meta-divider">·</span>
-      <span>14 min read</span>
+      <span class="meta-divider">&middot;</span>
+      <span>22 min read</span>
     </div>
   </div>
 </header>
@@ -114,7 +114,7 @@
         frozen at decision time, my TOCTOU window closes.
         <span class="fine">Fine.</span>
       </p>
-      <p class="pivot">→ I move to identity.</p>
+      <p class="pivot">&rarr; I move to identity.</p>
     </div>
   </article>
 
@@ -143,7 +143,7 @@
         proof-of-possession), replay fails because possession of the token is
         no longer sufficient. <span class="fine">Fine.</span>
       </p>
-      <p class="pivot">→ I look for content the agent already trusts.</p>
+      <p class="pivot">&rarr; I look for content the agent already trusts.</p>
     </div>
   </article>
 
@@ -167,7 +167,7 @@
         data and the agent's own directives), my indirect injection does not
         escalate. <span class="fine">Fine.</span>
       </p>
-      <p class="pivot">→ I shape what gets retrieved in the first place.</p>
+      <p class="pivot">&rarr; I shape what gets retrieved in the first place.</p>
     </div>
   </article>
 
@@ -189,7 +189,7 @@
         per-tenant corpus isolation, my poisoned record does not surface in
         someone else's query. <span class="fine">Fine.</span>
       </p>
-      <p class="pivot">→ I plant a payload directly in long-term memory.</p>
+      <p class="pivot">&rarr; I plant a payload directly in long-term memory.</p>
     </div>
   </article>
 
@@ -209,7 +209,7 @@
         promotion to the active partition, with ACL-gated reads, my payload
         never reaches a useful target. <span class="fine">Fine.</span>
       </p>
-      <p class="pivot">→ I chain tools.</p>
+      <p class="pivot">&rarr; I chain tools.</p>
     </div>
   </article>
 
@@ -236,7 +236,7 @@
         the chain breaks where the privileges would have compounded.
         <span class="fine">Fine.</span>
       </p>
-      <p class="pivot">→ I move up the supply chain.</p>
+      <p class="pivot">&rarr; I move up the supply chain.</p>
     </div>
   </article>
 
@@ -265,7 +265,7 @@
         approval and SBOM attestation, my supply chain attack costs more than
         my target is worth. <span class="fine">Fine.</span>
       </p>
-      <p class="pivot">→ I move to the layer that defines what gets audited.</p>
+      <p class="pivot">&rarr; I move to the layer that defines what gets audited.</p>
     </div>
   </article>
 
@@ -289,14 +289,14 @@
         audit gets reviewed, or I go after the policy that defines what gets
         audited in the first place.
       </p>
-      <p class="pivot">→ I reach for the governance layer itself.</p>
+      <p class="pivot">&rarr; I reach for the governance layer itself.</p>
     </div>
   </article>
 
   <!-- RING 09 (GOVERNANCE - the prize) -->
   <article class="ring ring-prize">
     <header class="ring-header">
-      <span class="ring-num prize">★</span>
+      <span class="ring-num prize">&#9733;</span>
       <h2 class="ring-name">GOVERNANCE</h2>
     </header>
     <div class="ring-body">
@@ -320,6 +320,538 @@
     </div>
   </article>
 
+</section>
+
+<!-- ============== ARCHITECTURE DEEP-DIVE ============== -->
+<section class="deep-dive">
+  <div class="deep-dive-kicker">PART II &middot; THE ARCHITECTURE, COMPONENT BY COMPONENT</div>
+  <h2 class="deep-dive-title">Now look at the defender</h2>
+  <div class="deep-dive-intro">
+    <p>
+      You just walked the attacker's path. Here is what they were probing
+      against, in component-level detail. Each block below maps to a layer
+      in Figure 1.
+    </p>
+    <p>
+      The point of reading these is to internalize that no single component
+      carries the platform on its own. Each one closes a specific ring of the
+      maze. Together they make the chain expensive, which is the only thing
+      that actually matters.
+    </p>
+  </div>
+
+  <!-- LAYER A -->
+  <section class="layer">
+    <h3 class="layer-heading"><span class="layer-letter">A</span> Control Plane &middot; Authorization</h3>
+    <p class="layer-summary">
+      Where anything in the platform that is allowed to exist gets defined.
+      The control plane is small on purpose. The smaller the surface, the
+      easier it is to audit who changed what.
+    </p>
+
+    <article class="component">
+      <h4 class="component-name">Agent Release Pipeline</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">A build-and-release path for agents. Every shipped agent has a signed manifest: prompt text, system instructions, tool list, model parameters, SBOM, the human who approved it.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Without a release pipeline, "the agent" in production has no canonical definition. Operators patch prompts in dashboards. Engineers swap tools in dev consoles. Drift is invisible because there is no baseline to drift from.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">You cannot answer "what is currently in production." You cannot reproduce an incident. You cannot revert a regression. Worst case, an attacker swaps a prompt or a tool through a console with no signed artifact behind it and no one notices for weeks.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Output of the pipeline is a signed bundle. Signing key is hardware-bound. Approval is multi-party for production rollouts. The runtime refuses to load an agent whose signature does not verify against the registry.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Agent Registry</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">The catalog of every agent the platform will execute, with version pinning and signature verification.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">The single source of truth that the runtime asks "is this agent allowed to run, at this version, with these tools?" before instantiating anything.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">The runtime trusts whatever artifact it loads. Drift becomes silent. Two engineers ship two different versions of the same agent with subtly different tool lists and the platform cannot tell.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Read-only at runtime, write-gated at the control plane. Drift detection runs continuously by re-fetching what the runtime has loaded and comparing to the registry's expected hash.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Policy Authoring</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">The interface and storage for policy-as-code. Every authz rule, rate limit, allowed tool combination, and action approval requirement lives here.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Policy is configuration with the safety properties of code. It needs versioning, peer review, rollback, and a tamper-evident change log.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Policies become dashboard tweaks made by individuals under deadline pressure. Compliance has nothing to point an auditor at. Any change to the deny path is invisible until something fires.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Dual-approval on production changes. Policy diffs reviewed like code. Every authoring action emits an entry to the Admin Plane Audit. Policy bundles are signed and pulled by the PDP, never pushed.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Admin Plane Audit &middot; Governance Change Ledger</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">A tamper-evident ledger of every change inside the governance layer itself. Policy edits, identity broker config, secret rotations, tool registrations.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">The governance layer is the trust anchor for everything beneath it. An attacker who reaches it can quietly rewrite the rules. The ledger is the only thing that makes that visible.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">The ring 09 attack from above. An attacker with control-plane access adds a policy exception in their favor, registers a malicious tool, or rotates a secret to one they hold. Nothing detects this because the runtime sees the new policy and obeys it as intended.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Append-only. Hash-chained. Mirrored to a separate trust domain than the rest of the platform. Reviewed on a cadence shorter than typical attacker dwell time. This is the only ledger that matters more than the runtime audit log.</div>
+      </div>
+    </article>
+  </section>
+
+  <!-- LAYER B -->
+  <section class="layer">
+    <h3 class="layer-heading"><span class="layer-letter">B</span> Security Services &middot; Enforcement</h3>
+    <p class="layer-summary">
+      Shared services every tenant agent calls, but never owns. Putting these
+      in their own layer means a compromised tenant cannot reach inside and
+      reconfigure them.
+    </p>
+
+    <article class="component">
+      <h4 class="component-name">Identity Broker / STS</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">Issues short-lived tokens. Exchanges credentials at boundaries (caller token in, downstream-audience token out).</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Agents need to act on behalf of users without being given the user's own credential. The broker is what makes on-behalf-of work safely.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">You end up using the agent's workload identity for everything (ring 02). One prompt injection becomes a path to every tool the agent can call.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Tokens are short-lived (minutes, not hours), audience-bound (a token minted for tool X cannot be replayed at tool Y), and ideally proof-of-possession (DPoP) so a leaked token without the holder's key is useless. The broker writes every issuance to the audit sink.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Policy Decision Point &middot; Deterministic</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">OPA, Cedar, or equivalent. A deterministic engine that takes (subject, action, resource, context) and returns allow or deny.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Authorization decisions must be reproducible. Two identical inputs must produce the same answer. An LLM-based policy decision is by definition non-deterministic and therefore manipulable (ring 01).</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Allow/deny becomes a debate the model can be talked into. The agent's reasoning becomes the security boundary. There is no boundary.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Runs as a sidecar or local cluster, microsecond-class latency. Policies pulled from authoring, never pushed in band. Decisions logged with the full input context so an auditor can replay any decision.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Tenant Vault</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">Per-tenant key store. Each tenant's encryption keys are isolated by label and access policy.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">So that even if the runtime is compromised, the blast radius is bounded to the tenant whose keys the compromised process can reach.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Cross-tenant compromise. One bad actor in tenant A reads or decrypts data from tenant B because all keys live in one bucket the runtime can dereference.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">HSM-backed where available. Key access is policy-mediated, not just IAM-mediated. Failed access attempts feed the inline anomaly detector.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Ingress Filter &middot; Modal Aware</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">The first thing every input touches. Detects prompt injection, jailbreak attempts, and cross-modal attacks (instructions hidden in images, audio, OCRed text).</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">The model is not a security boundary. Filtering must happen before content reaches the model. "Modal aware" matters because images and audio are now first-class injection vectors and a text-only filter is blind to them.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Direct injection lands. Cross-modal injection lands. Every other ring downstream has to assume it is being attacked from inside the trust boundary.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Multiple detectors in series, each cheap. Logs all rejected inputs to the audit sink for adversarial training data. False positives go to a triage queue, not silent drop.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Egress DLP &middot; Modal Aware</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">The last thing every output touches. Strips data exfiltration attempts before content leaves the platform.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Even if everything else holds, a compromised agent can still try to exfil. Markdown image URLs, email side-channels, DNS side-channels all go through the egress path. This is the choke point.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">The lethal trifecta. Private data access plus exposure to untrusted content plus ability to egress equals an exfil-ready agent. Egress DLP is what closes the third leg.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Content-aware: strips remote images from rendered markdown, detects encoded data in URLs and DNS lookups, applies a content classifier before any agent-authored email send.</div>
+      </div>
+    </article>
+  </section>
+
+  <!-- LAYER C -->
+  <section class="layer">
+    <h3 class="layer-heading"><span class="layer-letter">C</span> Agent Runtime &middot; Per Tenant</h3>
+    <p class="layer-summary">
+      Where actual work happens. The diagram shows two parallel swimlanes
+      (Tenant B, Tenant C) to make the point: every tenant gets the same
+      components, isolated. There is no shared-state path from one tenant's
+      runtime into another's.
+    </p>
+
+    <article class="component">
+      <h4 class="component-name">Policy Enforcement Point &middot; Agent Gateway</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">A gateway that sits in front of every agent invocation and every tool call. Four jobs: authenticate the caller, authorize the action against the PDP, enforce rate limits and egress DLP, run inline anomaly detection.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Without a single chokepoint, security checks get scattered across application code where they get forgotten, bypassed, or wired wrong. The gateway makes the checks unmissable.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Tools are called directly. Authentication and authorization become the application's responsibility. They will be implemented inconsistently.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Two phases. Phase 1 at agent invocation: authenticate the user, mint scoped tokens. Phase 2 at every tool call: re-authorize against the PDP with the action and resolved arguments, run egress DLP on the response. The PDP call is on the hot path and it has to be fast (sub-millisecond local cluster).</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Workload Identity</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">The identity the agent service itself runs as. Unprivileged by default. Obtains scoped capability tokens per call.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">The agent process needs an identity for system operations (telemetry, health checks) without inheriting access to user data.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">You either give the agent process broad access (which becomes the privilege escalation primitive in ring 02) or you cannot deploy it at all.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Workload identity has no standing access to user resources. All access happens via tokens minted at request time, audience-bound to the specific downstream tool.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Propagated Caller Identity</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">The user's identity, propagated through the agent to downstream tools via OBO tokens.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">When the agent calls a tool on the user's behalf, the tool must see and enforce the user's permissions, not the agent's.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Identity flattening. The agent becomes a single super-account that fronts every user. One injection through one user becomes a path to every other user's data the agent could touch.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">OBO token from the broker, audience-bound to the specific tool, exchanged at the gateway, never sent to the model itself. Tokens are short-lived (minutes) so a leaked one expires before it can be replayed at scale.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Long-Term Memory &middot; Per Tenant</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">Persistent storage the agent reads and writes across sessions. Per-tenant partitioned. ACL-gated reads. Signed writes.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Useful agents need state. The diagram makes the per-tenant partition explicit because cross-tenant memory is the breach vector you cannot easily detect.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Persistent memory injection. An attacker plants a payload that activates on a future session, possibly under a different user. Cleanup requires memory purge, not session reset.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Writes go to a quarantine partition first. Promotion to the active partition requires either operator review (for high-trust workflows) or passing a content classifier (for high-throughput ones). Reads are ACL-gated against the caller's identity, not the agent's.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Tool Use Planner</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">The component that decides which tools the agent will call, in what order, with what arguments. Classifies the resulting plan by risk.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Tool chaining is the defining failure mode (ring 06). The planner is where chain-graph constraints get enforced before execution begins.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Tool-chain confusion. The agent picks the wrong sequence of legitimate tools and arrives at an outcome no single-tool authorization would have allowed.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">The planner emits a plan as data, not as code. The plan is checked against allowed tool graphs (which sequences of tools are permitted for which user roles). The plan, the classification, and the deny decisions all go to the audit sink.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">HCD Approval Gate &middot; High-Risk Actions</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">Human-in-the-loop checkpoint for actions classified as high risk. Dual approval. Anomaly check.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Some actions cannot be automated safely no matter how good the controls upstream. Approving a payment, deleting a customer, sending an external email under the company's name. The gate forces a human touch.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Automation bias and rubber-stamp fatigue become the only barrier between agent and irreversible action. The barrier is paper-thin.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Approval is independent of the agent's framing: the reviewer sees a system-generated risk summary, not the agent's pitch. Dual approval for the highest-risk actions. Approval decisions go to the audit sink. If anomaly detection fires concurrently, the action is rejected even with approval.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">ALA Token Forwarding &middot; Per Chain Segment</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">Content-aware delegation tokens scoped to a single chain segment. The token to call tool A does not authorize calling tool B.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Privilege compounding across a chain is the mechanism behind tool-chain privilege escalation. Per-segment scoping breaks the compounding.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Confused deputy at agent scale. A low-privilege subagent reaches a high-privilege resource because the token it inherited from the supervisor was over-scoped for the path it actually took.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Tokens are minted by the broker at each chain boundary, with audience and capability scoped to exactly the next call. Re-evaluation happens at each composition boundary, not just at the entry.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Inline Anomaly Detector</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">Runs in the gateway path. Watches for patterns that look wrong: repeated tool failures, sudden rate spikes, unusual argument shapes, retry loops, fan-out explosions.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Some attacks only become visible in aggregate. Retry storms, parallel fan-out, and goal drift all show up as patterns rather than single events.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">The economics-class attacks land silently. Wallet drains. Token bloat. The agent does its job, the bill arrives Monday.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Lightweight rules first (rate, depth, argument-size), heavier classifiers second (semantic similarity to known attack patterns). Detector decisions are logged and feed an offline anomaly judge for pattern review.</div>
+      </div>
+    </article>
+  </section>
+
+  <!-- LAYER D -->
+  <section class="layer">
+    <h3 class="layer-heading"><span class="layer-letter">D</span> Telemetry and Audit Router</h3>
+    <p class="layer-summary">
+      Two things wearing a single uniform. They look similar. They are not
+      the same and you must not let them collapse into one.
+    </p>
+
+    <article class="component">
+      <h4 class="component-name">Telemetry Sink &middot; Metrics, Ops</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">Logs, metrics, traces. Operations data. Used by engineers to debug.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">You cannot run a platform you cannot observe.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">You cannot run a platform you cannot observe.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Ephemeral retention (days, not years). High volume. Indexed for fast search. Optimized for query, not for forensic immutability.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Audit Sink &middot; Immutable</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">WORM, hash-chained, retention-scoped to compliance regime (SOX 7-year, HIPAA 6-year, FedRAMP per ATO). Tamper-evident.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">The observability stack is not a security boundary. It was built for engineers debugging, not for an adversary trying to disappear (ring 08).</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Audit and ops collapse into the same store. An attacker who can rotate logs or manipulate indexes can hide their activity inside the same system the security team relies on for forensics.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Independent storage backend, separate trust domain from telemetry. Hash chain validated by an external job. Tampering breaks the chain. Compliance reporting reads from the audit sink, never from telemetry.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">SIEM / Compliance Reporting</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">Downstream consumer that reads the audit sink for security operations and compliance reporting.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Auditors do not want to read raw logs. SOC analysts cannot triage from raw logs at scale.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">The audit sink becomes a write-only graveyard. Information is recorded, never reviewed, attacks live in the gap.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Subscribe to the audit sink, not the telemetry sink. Alerts tuned to compliance regimes, not to engineering on-call.</div>
+      </div>
+    </article>
+  </section>
+
+  <!-- THE TRUST BOUNDARY -->
+  <section class="layer">
+    <h3 class="layer-heading"><span class="layer-letter">&#10148;</span> The Trust Boundary</h3>
+    <p class="layer-summary">
+      Everything to the right of the trust boundary is outside the platform's
+      control plane: client apps, external MCP tools, the tool marketplace,
+      the adversarial eval suite.
+    </p>
+
+    <article class="component">
+      <h4 class="component-name">External MCP Tools and Marketplace</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">Third-party tool servers and the marketplace they are sourced from. The platform consumes them; it does not own them.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Useful agents need access to tools the platform team did not write. The marketplace is the supply chain for that access.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Without signed manifests, attestation, and verification at the egress gateway, the supply chain attack from ring 07 is trivial. Tool-description injection from inside a third-party schema also lands here.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Manifests signed at the source. Verified at the egress gateway. Static analysis of tool definitions before exposure. mTLS to pinned endpoints.</div>
+      </div>
+    </article>
+
+    <article class="component">
+      <h4 class="component-name">Adversarial Eval Suite / Red Team Corpus</h4>
+      <div class="component-field">
+        <div class="component-field-label">What it is</div>
+        <div class="component-field-body">A continuously updated corpus of attacker prompts, payloads, and behavioral probes used to evaluate the platform on every release.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Why it exists</div>
+        <div class="component-field-body">Static defenses age into irrelevance. Continuous adversarial evaluation is what keeps the rest of the architecture honest about what it actually catches.</div>
+      </div>
+      <div class="component-field breaks">
+        <div class="component-field-label">What breaks</div>
+        <div class="component-field-body">Without a continuously growing eval suite, the gap between what the platform thinks it catches and what an attacker can actually do widens with every model change, tool addition, and policy edit.</div>
+      </div>
+      <div class="component-field">
+        <div class="component-field-label">Wiring</div>
+        <div class="component-field-body">Runs on every release. New CVEs and observed in-the-wild attacks are added to the corpus continuously. Failing tests block release.</div>
+      </div>
+    </article>
+  </section>
+
+  <!-- CODA -->
+  <div class="deep-dive-coda">
+    <p class="anchor-line">The pattern, stated plainly.</p>
+    <p>
+      Each layer has a job. Each component within a layer has a single failure
+      mode it prevents. The composition of the layers is what makes the system
+      survive a real adversary, not any single control.
+    </p>
+    <p>
+      A serious attacker does not need to break a single layer. They need to
+      find the layer you forgot to wire correctly, and chain the ones around
+      it. The architecture in this diagram is what closes that gap. Every
+      component exists because removing it makes a specific ring of the maze
+      cheap to walk through.
+    </p>
+    <p>
+      The Governance Audit Bus at the top is the load-bearing component
+      nobody talks about enough. It is what audits the people who write the
+      policies. Without it, every other control is downstream of an attacker
+      who reached the control plane.
+    </p>
+  </div>
 </section>
 
 <!-- ============== MAZE VISUALIZATION ============== -->
